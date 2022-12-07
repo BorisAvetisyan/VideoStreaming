@@ -6,7 +6,7 @@ class ImageViewer extends Frame {
     Image image;
 
     ImageViewer(byte[] imb) {
-        super("Movie");
+        super("Client Webcam");
         image = getToolkit().createImage(imb);
         Insets insets = getInsets();
         setVisible(true);

@@ -7,8 +7,8 @@ import org.springframework.stereotype.Component;
 import javax.annotation.PostConstruct;
 import java.io.IOException;
 import java.net.DatagramPacket;
-import java.net.DatagramSocket;
 import java.net.InetAddress;
+import java.net.MulticastSocket;
 
 @Component
 public class Client {
@@ -18,10 +18,14 @@ public class Client {
     @PostConstruct
     public void process() throws IOException {
         try {
-            String hostName = "localhost";
+            String hostName = "127.0.0.1";
+            String multicastHost = "224.0.0.0";
             int port = 4242;
+            int multicastPort = 4445;
 
-            DatagramSocket socket = new DatagramSocket();
+            MulticastSocket socket = new MulticastSocket(multicastPort);
+            InetAddress group = InetAddress.getByName(multicastHost);
+            socket.joinGroup(group);
             DatagramPacket outPacket, inPacket;
 
             String message = "Establish Connection";
@@ -30,20 +34,16 @@ public class Client {
                     InetAddress.getByName(hostName), port);
             socket.send(outPacket);
             System.out.println("Package sent to "+hostName+" "+port);
-
-            byte[] bufferStream = new byte[28000];
+            byte[] bufferStream = new byte[35000];
             inPacket = new DatagramPacket(bufferStream, bufferStream.length, InetAddress.getByName(hostName), port);
             socket.receive(inPacket);
-            bufferStream = new byte[inPacket.getLength()];
             byte[] imagebytes = inPacket.getData();
             ImageViewer iv = new ImageViewer(imagebytes);
 
+            System.out.println("socket.isConnected() -> " + socket.isConnected());
             while (true) {
-                System.out.println("Length is from client side is " + inPacket.getLength());
-
                 inPacket = new DatagramPacket(bufferStream, bufferStream.length);
                 socket.receive(inPacket);
-                System.out.println("received");
                 imagebytes = inPacket.getData();
                 iv.setImage(imagebytes);
             }

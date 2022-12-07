@@ -20,7 +20,6 @@ public class ImageSender extends Thread {
 
     public void run() {
         DatagramSocket socket = null;
-        int i = 0;
         try {
             socket = new DatagramSocket();
             while (true) {
@@ -35,7 +34,6 @@ public class ImageSender extends Thread {
                 System.out.println("waiting for request ....");
                 System.out.println("Sending packet to "+ip+" port "+port);
                 socket.send(packet);
-
                 try {
                     Thread.currentThread().sleep(10);
                 } catch (Exception e) {}

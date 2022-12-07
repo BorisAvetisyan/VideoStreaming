@@ -17,18 +17,18 @@ import java.net.InetAddress;
 public class Server {
 
     @PostConstruct()
-    public void process() throws IOException, InterruptedException {
+    public void process() throws IOException {
         try {
+            int port = 4445;
+
             System.out.println(InetAddress.getLocalHost().getHostAddress());
             System.out.println(InetAddress.getLocalHost().getHostName());
-            InetAddress address = InetAddress.getByName("localhost");
-            int port = 4242;
-
+            InetAddress address = InetAddress.getByName("224.0.0.0");
             Webcam webCamera = getWebCamera();
             assert webCamera != null;
             WebcamPanel webCamPanel = buildWebcamPanel(webCamera);
             buildCamWindow(webCamPanel);
-            DatagramSocket socket = new DatagramSocket(port);
+            DatagramSocket socket = new DatagramSocket(4242);
 
             while (true) {
                 byte[] buf = new byte[100];
@@ -40,7 +40,6 @@ public class Server {
                 int clientPort = receiverPacket.getPort();
                 ImageSender imageSender = new ImageSender(clientAddress, clientPort, webCamera);
                 imageSender.start();
-
             }
         } catch (Exception e) {
             throw e;
@@ -49,7 +48,7 @@ public class Server {
 
 
     public static void buildCamWindow(WebcamPanel webCamPanel) {
-        JFrame window = new JFrame("Test webcam panel");
+        JFrame window = new JFrame("Server Webcam");
         window.add(webCamPanel);
         window.setResizable(true);
         window.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
